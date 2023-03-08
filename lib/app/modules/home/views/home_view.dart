@@ -1,3 +1,7 @@
+import 'package:camera_geo/app/data/themes.dart';
+import 'package:camera_geo/app/modules/home/views/success_view.dart';
+import 'package:camera_geo/app/widgets/button_widget.dart';
+import 'package:camera_geo/app/widgets/form_widget.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
@@ -14,8 +18,48 @@ class HomeView extends GetView<HomeController> {
     return Scaffold(
       body: Column(
         children: [
-          Expanded(
-            child: Lottie.asset("assets/photo.json"),
+          Expanded(child: Lottie.asset("assets/login.json")),
+          SingleChildScrollView(
+            child: Container(
+              padding: EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  Text(
+                    "Silahkan masuk :",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  FormWidget(
+                    hint: "Masukan username / email",
+                    controller: homeC.usernameC,
+                    iconPrefix: Icon(Icons.person),
+                  ),
+                  SizedBox(height: 10),
+                  Obx(
+                    () => FormWidget(
+                      hint: "Masukan password",
+                      controller: homeC.passwordC,
+                      iconPrefix: Icon(Icons.lock),
+                      iconSuffix: InkWell(
+                        onTap: () {
+                          homeC.showPassword();
+                        },
+                        child: Icon(
+                          homeC.isShow.isTrue
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                        ),
+                      ),
+                      obsecureText: homeC.isShow.value,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
           homeC.bannerAd == null
               ? Container()
@@ -24,29 +68,13 @@ class HomeView extends GetView<HomeController> {
                   height: homeC.bannerAd!.size.height.toDouble(),
                   child: AdWidget(ad: homeC.bannerAd!),
                 ),
-          Container(
-            margin: EdgeInsets.all(20),
-            child: ElevatedButton(
-              onPressed: () => homeC.openCamer(),
-              style: ElevatedButton.styleFrom(
-                elevation: 0,
-                fixedSize: Size(Get.width, 50),
-                backgroundColor: Colors.redAccent,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                padding: EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 13,
-                ),
-              ),
-              child: Text(
-                "Ambil Foto",
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-            ),
+          ButtonWidget(
+            title: "Masuk",
+            color: primaryColor,
+            onPressed: () {
+              homeC.openCamer();
+              // Get.to(() => SuccessView());
+            },
           ),
         ],
       ),

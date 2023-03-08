@@ -23,6 +23,9 @@ class HomeController extends GetxController {
   var longitude = "".obs;
   var address = "".obs;
   var isSave = false.obs;
+  var isShow = false.obs;
+  var usernameC = TextEditingController();
+  var passwordC = TextEditingController();
   StreamSubscription<Position>? streamSubscription;
   WidgetsToImageController widgetToImageC = WidgetsToImageController();
   Uint8List? bytes;
@@ -31,7 +34,7 @@ class HomeController extends GetxController {
 
   @override
   void onInit() async {
-    // getLocation();
+    getLocation();
     BannerAd(
       size: AdSize.banner,
       adUnitId: AdHelper.bannerAdUnitId,
@@ -67,6 +70,11 @@ class HomeController extends GetxController {
     imagePath.value = '';
     bannerAd?.dispose();
     super.dispose();
+  }
+
+  // show password
+  void showPassword() {
+    isShow.value = !isShow.value;
   }
 
   void saveToGallery() async {

@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:camera_geo/app/data/themes.dart';
 import 'package:camera_geo/app/modules/home/controllers/home_controller.dart';
+import 'package:camera_geo/app/widgets/button_widget.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
@@ -12,7 +14,6 @@ class PriviewView extends GetView {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -20,48 +21,51 @@ class PriviewView extends GetView {
             () => Expanded(
               child: WidgetsToImage(
                 controller: homeC.widgetToImageC,
-                child: Stack(
-                  alignment: Alignment.center,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Image.file(
                       File(homeC.imagePath.value),
                     ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Container(
-                        padding: EdgeInsets.all(10),
-                        width: Get.width * 0.9,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              "Tanggal : ${homeC.tanggal}",
-                              style: TextStyle(
-                                color: Colors.white,
-                              ),
+                    Container(
+                      padding: EdgeInsets.all(10),
+                      width: double.infinity,
+                      color: Colors.white,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Tanggal : ${homeC.tanggal}",
+                            style: TextStyle(
+                              color: Colors.black,
                             ),
-                            Text(
-                              "Latitude : ${homeC.latitude.value}",
-                              style: TextStyle(
-                                color: Colors.white,
-                              ),
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            "Latitude : ${homeC.latitude.value}",
+                            style: TextStyle(
+                              color: Colors.redAccent,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
                             ),
-                            Text(
-                              "Longitude : ${homeC.longitude.value}",
-                              style: TextStyle(
-                                color: Colors.white,
-                              ),
+                          ),
+                          Text(
+                            "Longitude : ${homeC.longitude.value}",
+                            style: TextStyle(
+                              color: Colors.redAccent,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
                             ),
-                            Text(
-                              "Alamat : ${homeC.address.value}",
-                              textAlign: TextAlign.right,
-                              style: TextStyle(
-                                color: Colors.white,
-                              ),
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            "Alamat : ${homeC.address.value}",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.black,
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -73,74 +77,26 @@ class PriviewView extends GetView {
             () => Row(
               children: [
                 Expanded(
-                  child: Container(
-                    margin: EdgeInsets.only(
-                      bottom: 20,
-                      left: 20,
-                      top: 20,
-                      right: 10,
-                    ),
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        homeC.isSave.value = false;
-                        Get.back();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        elevation: 0,
-                        fixedSize: Size(Get.width, 50),
-                        backgroundColor: Colors.redAccent,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 13,
-                        ),
-                      ),
-                      child: Text(
-                        "Kembali",
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
+                  child: ButtonWidget(
+                    title: "Kembali",
+                    color: redColor,
+                    onPressed: () {
+                      homeC.isSave.value = false;
+                      Get.back();
+                    },
                   ),
                 ),
                 homeC.isSave.isFalse
                     ? Expanded(
-                        child: Container(
-                          margin: EdgeInsets.only(
-                            bottom: 20,
-                            right: 20,
-                            top: 20,
-                            left: 10,
-                          ),
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              homeC.saveToGallery();
-                            },
-                            style: ElevatedButton.styleFrom(
-                              elevation: 0,
-                              fixedSize: Size(Get.width, 50),
-                              backgroundColor: Colors.blue,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 20,
-                                vertical: 13,
-                              ),
-                            ),
-                            child: Text("Simpan ke galeri",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                )),
-                          ),
+                        child: ButtonWidget(
+                          title: "Simpan & Kirim",
+                          color: primaryColor,
+                          onPressed: () {
+                            homeC.saveToGallery();
+                          },
                         ),
                       )
-                    : SizedBox(width: 10),
+                    : SizedBox(),
               ],
             ),
           ),
