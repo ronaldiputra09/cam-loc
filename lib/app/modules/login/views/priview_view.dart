@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:camera_geo/app/data/themes.dart';
-import 'package:camera_geo/app/modules/home/controllers/home_controller.dart';
+import 'package:camera_geo/app/modules/login/controllers/login_controller.dart';
 import 'package:camera_geo/app/widgets/button_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -10,7 +10,7 @@ import 'package:widgets_to_image/widgets_to_image.dart';
 
 class PriviewView extends GetView {
   PriviewView({Key? key}) : super(key: key);
-  final homeC = Get.put(HomeController());
+  final homeC = Get.put(LoginController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(

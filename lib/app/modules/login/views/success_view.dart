@@ -1,5 +1,5 @@
 import 'package:camera_geo/app/data/themes.dart';
-import 'package:camera_geo/app/modules/home/views/home_view.dart';
+import 'package:camera_geo/app/modules/login/views/login_view.dart';
 import 'package:camera_geo/app/widgets/button_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -31,7 +31,7 @@ class SuccessView extends GetView {
                   ),
                   SizedBox(height: 10),
                   Text(
-                    "Selamat anda berhasil mengirimkan data / foto beserta lokasi anda, Selanjutnya silahkan kembali ke halaman website untuk memilih jalur seleksi.",
+                    "Selamat anda berhasil mengirimkan data / foto beserta lokasi anda, Selanjutnya silahkan kembali ke halaman website untuk melanjutkan proses pendaftaran.",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.black,
@@ -45,7 +45,7 @@ class SuccessView extends GetView {
           ButtonWidget(
             title: "Kembali",
             color: redColor,
-            onPressed: () => Get.offAll(() => HomeView()),
+            onPressed: () => Get.offAll(() => LoginView()),
           ),
         ],
       ),
