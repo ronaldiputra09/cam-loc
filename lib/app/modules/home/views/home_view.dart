@@ -87,6 +87,14 @@ class HomeView extends GetView<HomeController> {
                         },
                       ),
                     ),
+                    SizedBox(height: 10),
+                    Text(
+                      "Version : ${homeC.version.value}",
+                      style: TextStyle(
+                        color: blackColor,
+                        fontSize: 12,
+                      ),
+                    ),
                   ],
                 )
               : Center(

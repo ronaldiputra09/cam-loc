@@ -5,6 +5,7 @@ import 'package:camera_geo/app/widgets/info_widget.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:package_info_plus/package_info_plus.dart';
 
 class HomeController extends GetxController {
   final box = GetStorage();
@@ -12,8 +13,11 @@ class HomeController extends GetxController {
   var isLoadingData = false.obs;
   var name = "".obs;
   var foto = "".obs;
+  var version = "".obs;
+
   @override
   void onInit() {
+    checkVersion();
     cekDataGet();
     super.onInit();
   }
@@ -26,6 +30,11 @@ class HomeController extends GetxController {
   @override
   void onClose() {
     super.onClose();
+  }
+
+  void checkVersion() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    version.value = packageInfo.version;
   }
 
   void cekDataGet() async {
