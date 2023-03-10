@@ -1,21 +1,25 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
-import 'package:camera_geo/app/helpers/ad_helper.dart';
+import 'package:camera_geo/app/data/api_path.dart';
 import 'package:camera_geo/app/modules/login/views/priview_view.dart';
+import 'package:camera_geo/app/modules/login/views/success_view.dart';
+import 'package:camera_geo/app/widgets/info_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:widgets_to_image/widgets_to_image.dart';
+import 'package:http/http.dart' as http;
 
 class LoginController extends GetxController {
+  final box = GetStorage();
   final imagePicker = ImagePicker();
   var imagePath = "".obs;
   var tanggal = DateTime.now();
@@ -23,35 +27,17 @@ class LoginController extends GetxController {
   var longitude = "".obs;
   var address = "".obs;
   var isSave = false.obs;
-  var isShow = false.obs;
+  var isShow = true.obs;
   var usernameC = TextEditingController();
   var passwordC = TextEditingController();
+  var isLoading = false.obs;
   StreamSubscription<Position>? streamSubscription;
   WidgetsToImageController widgetToImageC = WidgetsToImageController();
   Uint8List? bytes;
 
-  BannerAd? bannerAd;
-
   @override
   void onInit() async {
     getLocation();
-    BannerAd(
-      size: AdSize.banner,
-      adUnitId: AdHelper.bannerAdUnitId,
-      listener: BannerAdListener(
-        onAdLoaded: (Ad ad) {
-          print('Ad loaded.');
-          bannerAd = ad as BannerAd?;
-        },
-        onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          ad.dispose();
-          print('Ad failed to load: $error');
-        },
-        onAdOpened: (Ad ad) => print('Ad opened.'),
-        onAdClosed: (Ad ad) => print('Ad closed.'),
-      ),
-      request: AdRequest(),
-    ).load();
     super.onInit();
   }
 
@@ -68,8 +54,76 @@ class LoginController extends GetxController {
   @override
   void dispose() {
     imagePath.value = '';
-    bannerAd?.dispose();
     super.dispose();
+  }
+
+  void loginPost() async {
+    isLoading.value = true;
+    Uri url = Uri.parse(ApiPath.LOGIN);
+    try {
+      final response = await http.post(
+        url,
+        body: {
+          "username": usernameC.text,
+          "password": passwordC.text,
+        },
+      );
+
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        if (box.read("token") != null) {
+          box.remove("token");
+          box.write("token", data['data']['token']);
+        } else {
+          box.write("token", data['data']['token']);
+        }
+        Get.offAllNamed("/home");
+      } else {
+        infoWidget("${data['message']}", "${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error Login: ${e}");
+    }
+    isLoading.value = false;
+  }
+
+  void addKoordinatPost(String image) async {
+    Uri url = Uri.parse(ApiPath.ADD_KOORDINAT);
+    try {
+      final request = await http.MultipartRequest('POST', url);
+      request.headers.addAll({
+        "Accept": "application/json",
+        "Authorization": "Bearer  ${box.read('token')}",
+      });
+      request.fields.addAll(
+        {
+          "lat": latitude.value,
+          "long": longitude.value,
+        },
+      );
+      if (image != "") {
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            'foto',
+            image,
+            filename: image.split('/').last,
+          ),
+        );
+      }
+      var response = await request.send();
+      response.stream.transform(utf8.decoder).listen((value) {
+        var data = jsonDecode(value);
+        print(data);
+        if (response.statusCode != 200) {
+          infoWidget("${data['message']}", "${response.statusCode}");
+        } else {
+          Get.offAll(() => SuccessView());
+        }
+      });
+    } catch (e) {
+      print("Error Add Koordinat: ${e}");
+    }
+    isLoading(false);
   }
 
   // show password
@@ -77,7 +131,8 @@ class LoginController extends GetxController {
     isShow.value = !isShow.value;
   }
 
-  void saveToGallery() async {
+  void saveToGalleryAndSendDB() async {
+    isLoading(true);
     final directory = await getApplicationDocumentsDirectory();
     final dir = directory.path;
     final bytes = await widgetToImageC.capture();
@@ -85,21 +140,24 @@ class LoginController extends GetxController {
         File('${dir}/image_${DateTime.now()}.jpg').writeAsBytes(bytes!);
     exportToJpg.then(
       (value) {
-        GallerySaver.saveImage(value.path).then(
-          (value1) {
-            Get.defaultDialog(
-              title: "Berhasil",
-              middleText: "Gambar berhasil disimpan ke gallery",
-              confirmTextColor: Colors.white,
-              textConfirm: "Buka",
-              onConfirm: () {
-                Get.back();
-                isSave.value = true;
-                OpenFilex.open(value.path);
-              },
-            );
-          },
-        );
+        GallerySaver.saveImage(value.path);
+        addKoordinatPost(value.path);
+        // .then(
+        //   (value1) {
+        //     print("BERHASIL DISIMPAN");
+        //     // Get.defaultDialog(
+        //     //   title: "Berhasil",
+        //     //   middleText: "Gambar berhasil disimpan ke gallery",
+        //     //   confirmTextColor: Colors.white,
+        //     //   textConfirm: "Buka",
+        //     //   onConfirm: () {
+        //     //     Get.back();
+        //     //     isSave.value = true;
+        //     //     OpenFilex.open(value.path);
+        //     //   },
+        //     // );
+        //   },
+        // );
       },
     );
   }
@@ -149,7 +207,7 @@ class LoginController extends GetxController {
           onWillPop: () async => false,
           title: "Pemberitahuan",
           content: Text(
-            "Device anda terdeteksi FAKE GPS!! \n Panik Ga?",
+            "Device anda terdeteksi FAKE GPS!!",
             style: TextStyle(
               fontSize: 18,
               color: Colors.red,
@@ -179,7 +237,7 @@ class LoginController extends GetxController {
     );
     Placemark place = placemark[0];
     address.value =
-        "${place.street}, ${place.subLocality}, ${place.locality}, ${place.administrativeArea}, ${place.country}";
+        "${place.street == "" ? "Jl. tidak diketahui" : place.street}, ${place.subLocality}, ${place.locality}, ${place.administrativeArea}, ${place.country}";
   }
 
   void openCamer() async {
@@ -187,6 +245,7 @@ class LoginController extends GetxController {
       source: ImageSource.camera,
       preferredCameraDevice: CameraDevice.front,
       requestFullMetadata: true,
+      imageQuality: 50,
     );
     if (image != null) {
       imagePath.value = image.path;

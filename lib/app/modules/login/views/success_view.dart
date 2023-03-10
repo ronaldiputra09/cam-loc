@@ -1,5 +1,4 @@
 import 'package:camera_geo/app/data/themes.dart';
-import 'package:camera_geo/app/modules/login/views/login_view.dart';
 import 'package:camera_geo/app/widgets/button_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -11,7 +10,6 @@ class SuccessView extends GetView {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: primaryColor,
       body: Column(
         children: [
           Expanded(
@@ -42,10 +40,13 @@ class SuccessView extends GetView {
               ),
             ),
           ),
-          ButtonWidget(
-            title: "Kembali",
-            color: redColor,
-            onPressed: () => Get.offAll(() => LoginView()),
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: ButtonWidget(
+              title: "Kembali",
+              color: redColor,
+              onPressed: () => Get.offAllNamed('/home'),
+            ),
           ),
         ],
       ),

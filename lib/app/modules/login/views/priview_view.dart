@@ -10,7 +10,7 @@ import 'package:widgets_to_image/widgets_to_image.dart';
 
 class PriviewView extends GetView {
   PriviewView({Key? key}) : super(key: key);
-  final homeC = Get.put(LoginController());
+  final loginC = Get.put(LoginController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,12 +20,12 @@ class PriviewView extends GetView {
           Obx(
             () => Expanded(
               child: WidgetsToImage(
-                controller: homeC.widgetToImageC,
+                controller: loginC.widgetToImageC,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Image.file(
-                      File(homeC.imagePath.value),
+                      File(loginC.imagePath.value),
                     ),
                     Container(
                       padding: EdgeInsets.all(10),
@@ -35,14 +35,14 @@ class PriviewView extends GetView {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
-                            "Tanggal : ${homeC.tanggal}",
+                            "Tanggal : ${loginC.tanggal}",
                             style: TextStyle(
                               color: Colors.black,
                             ),
                           ),
                           SizedBox(height: 10),
                           Text(
-                            "Latitude : ${homeC.latitude.value}",
+                            "Latitude : ${loginC.latitude.value}",
                             style: TextStyle(
                               color: Colors.redAccent,
                               fontSize: 18,
@@ -50,7 +50,7 @@ class PriviewView extends GetView {
                             ),
                           ),
                           Text(
-                            "Longitude : ${homeC.longitude.value}",
+                            "Longitude : ${loginC.longitude.value}",
                             style: TextStyle(
                               color: Colors.redAccent,
                               fontSize: 18,
@@ -59,7 +59,7 @@ class PriviewView extends GetView {
                           ),
                           SizedBox(height: 10),
                           Text(
-                            "Alamat : ${homeC.address.value}",
+                            "Alamat : ${loginC.address.value}",
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: Colors.black,
@@ -73,30 +73,80 @@ class PriviewView extends GetView {
               ),
             ),
           ),
-          Obx(
-            () => Row(
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: Row(
               children: [
                 Expanded(
                   child: ButtonWidget(
                     title: "Kembali",
                     color: redColor,
                     onPressed: () {
-                      homeC.isSave.value = false;
+                      loginC.isSave.value = false;
                       Get.back();
                     },
                   ),
                 ),
-                homeC.isSave.isFalse
-                    ? Expanded(
-                        child: ButtonWidget(
-                          title: "Simpan & Kirim",
-                          color: primaryColor,
-                          onPressed: () {
-                            homeC.saveToGallery();
-                          },
+                SizedBox(width: 10),
+                Expanded(
+                  child: ButtonWidget(
+                    title: "Simpan & Kirim",
+                    color: primaryColor,
+                    onPressed: () {
+                      Get.defaultDialog(
+                        title: "Informasi",
+                        barrierDismissible: false,
+                        onWillPop: () async => await true,
+                        titleStyle: TextStyle(
+                          color: Colors.black,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
-                      )
-                    : SizedBox(),
+                        radius: 15,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 20),
+                        content: Column(
+                          children: [
+                            Text(
+                              "Apakah anda yakin akan menyimpan dan mengirim data ini? \n Data yang sudah dikirim tidak dapat diubah kembali.",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.black,
+                              ),
+                            ),
+                            Divider(color: greyColor),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: ButtonWidget(
+                                    title: "Batal",
+                                    color: redColor,
+                                    loading: loginC.isLoading.value,
+                                    onPressed: () {
+                                      Get.back();
+                                    },
+                                  ),
+                                ),
+                                SizedBox(width: 10),
+                                Expanded(
+                                  child: Obx(
+                                    () => ButtonWidget(
+                                      title: "Yakin",
+                                      color: primaryColor,
+                                      loading: loginC.isLoading.value,
+                                      onPressed: () {
+                                        loginC.saveToGalleryAndSendDB();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ],
             ),
           ),

@@ -2,10 +2,10 @@ name: camera_geo
 version: 1.0.0+1
 publish_to: none
 description: A new Flutter project.
-environment: 
+environment:
   sdk: '>=2.18.2 <3.0.0'
 
-dependencies: 
+dependencies:
   cupertino_icons: ^1.0.2
   get: 4.6.5
   permission_handler: 10.2.0
@@ -16,27 +16,26 @@ dependencies:
   lottie: 2.2.0
   gallery_saver: ^2.3.2
   widgets_to_image: 0.0.2
-  open_filex: 4.3.2
-  google_mobile_ads: 2.3.0
   http: 0.13.5
   intl: 0.18.0
-  flutter: 
+  get_storage: 2.1.1
+  photo_view: 0.14.0
+  flutter:
     sdk: flutter
 
-dev_dependencies: 
+dev_dependencies:
   flutter_lints: ^2.0.0
   flutter_launcher_icons: 0.12.0
-  flutter_test: 
+  flutter_test:
     sdk: flutter
 
-flutter: 
-  assets: 
+flutter:
+  assets:
     - assets/
   uses-material-design: true
 
-flutter_icons: 
+flutter_icons:
   android: launcher_icon
   image_path: assets/logo.png
   ios: true
   min_sdk_android: 21
-

@@ -5,17 +5,18 @@ class ButtonWidget extends StatelessWidget {
   final Function()? onPressed;
   final String title;
   final Color color;
+  final loading;
   const ButtonWidget({
     super.key,
     this.onPressed,
     required this.title,
     required this.color,
+    this.loading = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(20),
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
@@ -30,12 +31,33 @@ class ButtonWidget extends StatelessWidget {
             vertical: 13,
           ),
         ),
-        child: Text(
-          "${title}",
-          style: TextStyle(
-            color: Colors.white,
-          ),
-        ),
+        child: loading == false
+            ? Text(
+                "${title}",
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Text(
+                    "Loading...",
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
       ),
     );
   }
